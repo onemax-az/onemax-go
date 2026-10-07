@@ -1,0 +1,12 @@
+*.test
+*.out
+*.exe
+coverage.txt
+/bin/
+/vendor/
+go.work
+go.work.sum
+.idea/
+.vscode/
+.DS_Store
+.env
