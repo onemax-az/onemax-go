@@ -233,7 +233,14 @@ go vet ./...
 go test -race ./...
 ```
 
-`gofmt -l .` must print nothing. The tests run against a local stub server and never touch the network. The race detector needs cgo, so on a machine without a C compiler run `go test ./...` instead. There is no release workflow, because Go modules are published by pushing a version tag such as `v0.1.0`.
+`gofmt -l .` must print nothing. The tests run against a local stub server and never touch the network. The race detector needs cgo, so on a machine without a C compiler run `go test ./...` instead.
+
+## Releasing
+
+Set the version in `version.go`, add a `## x.y.z` section to `CHANGELOG.md`, commit, then push a tag
+`vx.y.z`. The `Publish` workflow checks that the tag equals the package version, runs the checks,
+asks the Go module proxy to index the version and creates the GitHub release from the changelog section. A tag that does not match the
+version publishes nothing.
 
 ## License
 

@@ -1,0 +1,50 @@
+name: Publish
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+      - name: Check the tag matches the package version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          declared="$(sed -n 's/^const Version = "\(.*\)"$/\1/p' version.go)"
+          echo "tag $tag, version.go $declared"
+          test -n "$declared"
+          test "$tag" = "$declared"
+      - run: test -z "$(gofmt -l .)"
+      - run: go vet ./...
+      - run: go test -race ./...
+
+  release:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Take the notes from the changelog
+        run: |
+          awk -v version="${GITHUB_REF_NAME#v}" '
+            /^## / { found = ($2 == version); next }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          test -s notes.md
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md
+
+  publish:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask the Go module proxy to index the version
+        run: curl -fsS "https://proxy.golang.org/github.com/onemax-az/onemax-go/@v/${GITHUB_REF_NAME}.info"
