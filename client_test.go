@@ -123,7 +123,7 @@ func assertRequest(t *testing.T, seen exchange, method, uri, body string) {
 }
 
 func TestVersion(t *testing.T) {
-	if Version != "0.1.0" {
+	if Version != "0.2.0" {
 		t.Errorf("Version = %q", Version)
 	}
 }
