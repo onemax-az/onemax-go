@@ -13,6 +13,13 @@ const (
 	ReasonNotLinked        Reason = "not_linked"
 )
 
+type Mode string
+
+const (
+	ModeLive Mode = "live"
+	ModeTest Mode = "test"
+)
+
 type UsageStatus string
 
 const (
@@ -34,6 +41,7 @@ type Context struct {
 	VenueName   string  `json:"venue_name"`
 	DailyLimit  int     `json:"daily_limit"`
 	Offers      []Offer `json:"offers"`
+	Mode        Mode    `json:"mode"`
 }
 
 type Verification struct {
@@ -42,6 +50,7 @@ type Verification struct {
 	Reason     Reason  `json:"reason"`
 	UsageID    *string `json:"usage_id"`
 	DailyLimit int     `json:"daily_limit"`
+	Mode       Mode    `json:"mode"`
 }
 
 type Usage struct {
@@ -51,14 +60,17 @@ type Usage struct {
 	CreatedAt   time.Time   `json:"created_at"`
 	ConfirmedAt *time.Time  `json:"confirmed_at"`
 	VoidedAt    *time.Time  `json:"voided_at"`
+	Mode        Mode        `json:"mode"`
 }
 
 type LinkToken struct {
 	LinkToken string `json:"link_token"`
 	Active    bool   `json:"active"`
+	Mode      Mode   `json:"mode"`
 }
 
 type LinkStatus struct {
 	Linked bool `json:"linked"`
 	Active bool `json:"active"`
+	Mode   Mode `json:"mode"`
 }

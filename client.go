@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+const testKeyPrefix = "omx_test_"
+
 var localePrefixes = map[string]string{
 	"":   "",
 	"az": "",
@@ -68,6 +70,13 @@ func NewClient(apiKey string, opts ...Option) (*Client, error) {
 	client.baseURL = strings.TrimRight(client.baseURL, "/")
 	client.siteURL = strings.TrimRight(client.siteURL, "/")
 	return client, nil
+}
+
+func (c *Client) Mode() Mode {
+	if strings.HasPrefix(strings.TrimSpace(c.apiKey), testKeyPrefix) {
+		return ModeTest
+	}
+	return ModeLive
 }
 
 func (c *Client) Context(ctx context.Context) (*Context, error) {

@@ -139,6 +139,32 @@ A token whose link the member removed is not an error. `LinkStatus` answers `Lin
 
 The partner never learns the member's name, email, phone or photo.
 
+## Test mode
+
+Build and try your integration before a real member is involved. Create a test key in the partner panel: it starts with `omx_test_` and works on the same address with the same methods. Nothing a test key does touches real members, usages or statistics. Going live means swapping the key.
+
+```go
+client, err := onemax.NewClient("omx_test_...")
+if err != nil {
+	log.Fatal(err)
+}
+fmt.Println(client.Mode())
+```
+
+`client.Mode()` is `onemax.ModeTest` for a test key and `onemax.ModeLive` otherwise. Every result also carries `Mode`, the mode the API answered in.
+
+| Code | Test member | `Reason` |
+| --- | --- | --- |
+| `000001` | Active member, never runs out | `ok` |
+| `000002` | One use left today, then `limit_reached` | `ok` |
+| `000003` | Reached the limit | `limit_reached` |
+| `000004` | No subscription | `not_subscribed` |
+| `000005` | Offer not available now | `offer_unavailable` |
+
+Any other code returns `invalid_code`. The partner panel's test mode tab also shows a renewing QR code for each test member, and lists your recent test requests.
+
+For account linking, build the permission page address with the test client ID from the panel. The test page asks for no sign-in: you pick a test member and allow or deny, and it returns to your address as the live page does. Exchange the code with your test key.
+
 ## Results
 
 `VerifyCode` and `VerifyLink` return a `*Verification`.
